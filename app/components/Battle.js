@@ -116,19 +116,22 @@ PlayerPreview.propTypes = {
 }
 
 function Battle() {
-    const [players, setPlayers] = useState({playerOne: null, playerTwo: null})
+    const [playerOne, setPlayerOne] = useState(null)
+    const [playerTwo, setPlayerTwo] = useState(null)
 
     const handleSubmit = (id, player) => {
-        setPlayers({
-            ...players,
-            [id]: player
-        })
+        if(id === 'playerOne') {
+            setPlayerOne(player)
+        } else {
+            setPlayerTwo(player)
+        }
     }
     const handleReset = (id) => {
-        setPlayers({
-            ...players,
-            [id]: null
-        })
+        if(id === 'playerOne') {
+            setPlayerOne(null)
+        } else {
+            setPlayerTwo(null)
+        }
     }
     return (
         <React.Fragment>
@@ -137,25 +140,25 @@ function Battle() {
             <div className='players-container'>
                 <h1 className='center-text header-lg'>Players</h1>
                 <div className='row space-around'>
-                    {players.playerOne === null
+                    {playerOne === null
                         ? <PlayerInput
                             label='Player One'
                             onSubmit={(player) => handleSubmit('playerOne', player)}
                         />
                         : <PlayerPreview
-                            username={players.playerOne}
+                            username={playerOne}
                             label='Player One'
                             onReset={() => handleReset('playerOne')}
                         />
                     }
 
-                    {players.playerTwo === null
+                    {playerTwo === null
                         ? <PlayerInput
                             label='Player Two'
                             onSubmit={(player) => handleSubmit('playerTwo', player)}
                         />
                         : <PlayerPreview
-                            username={players.playerTwo}
+                            username={playerTwo}
                             label='Player Two'
                             onReset={() => handleReset('playerTwo')}
                         />
@@ -163,12 +166,12 @@ function Battle() {
                 </div>
 
 
-                {players.playerOne && players.playerTwo && (
+                {playerOne && playerTwo && (
                     <Link
                         className='btn dark-btn btn-space'
                         to={{
                             pathname: '/battle/results',
-                            search: `?playerOne=${players.playerOne}&playerTwo=${players.playerTwo}`
+                            search: `?playerOne=${playerOne}&playerTwo=${playerTwo}`
                         }}
                     >
                         Battle
