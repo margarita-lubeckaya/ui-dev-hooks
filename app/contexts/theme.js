@@ -1,6 +1,5 @@
 import React from 'react'
 
-const { Consumer, Provider } = React.createContext()
+const ThemeContext = React.createContext({ theme: 'light', toggleTheme: ()=> {}})
 
-export const ThemeConsumer = Consumer
-export const ThemeProvider = Provider
+export default ThemeContext
