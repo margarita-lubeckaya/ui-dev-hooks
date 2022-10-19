@@ -1,4 +1,4 @@
-import React, {useReducer, useEffect} from 'react'
+import React, {useReducer, useEffect, useRef, useState} from 'react'
 import PropTypes from 'prop-types'
 import {fetchPopularRepos} from '../utils/api'
 import {FaUser, FaStar, FaCodeBranch, FaExclamationTriangle} from 'react-icons/fa'
@@ -84,27 +84,12 @@ ReposGrid.propTypes = {
 
 function popularReducer(state, action) {
     switch (action.type) {
-        case 'selectLanguage' :
-            return {
-                ...state,
-                selectedLanguage: action.language,
-                error: null,
-            }
-
-        case 'loading' :
-            console.log('start loading...')
-            return {
-                ...state,
-                isLoading: true,
-                error: null,
-            }
 
         case 'updateRepos' :
             console.log('updating..', state)
 
             return {
                 ...state,
-                isLoading: false,
                 error: null,
                 repos: {
                     ...state.repos,
@@ -115,7 +100,6 @@ function popularReducer(state, action) {
         case 'error' :
             return {
                 ...state,
-                isLoading: false,
                 error: action.error,
             }
 
@@ -127,32 +111,30 @@ function popularReducer(state, action) {
 
 function Popular() {
 
+    const [selectedLanguage, setSelectedLanguage] = useState('All')
+
     const initState = {
-        selectedLanguage: 'All',
         repos: {},
         error: null,
-        isLoading: false
     }
 
-    const [{selectedLanguage, repos, error, isLoading}, dispatch] = useReducer(popularReducer, initState);
+    const [{repos, error}, dispatch] = useReducer(popularReducer, initState);
+
+    const fetchedLanguages = useRef([])
 
 
     useEffect(() => {
-        updateLanguage(selectedLanguage)
-    }, [])
+
+        if(fetchedLanguages.current.includes([selectedLanguage]) === false){
+
+            fetchedLanguages.current.push(selectedLanguage)
+
+            console.log(selectedLanguage)
 
 
-    const updateLanguage = (language) => {
-
-        dispatch({type: 'selectLanguage', language: language})
-
-        if (!repos[language]) {
-
-            dispatch({type: 'loading', language})
-
-            fetchPopularRepos(language)
+            fetchPopularRepos(selectedLanguage)
                 .then((data) => {
-                    dispatch({type: 'updateRepos', repos: {[language]: data}})
+                    dispatch({type: 'updateRepos', repos: {[selectedLanguage]: data}})
 
                 })
                 .catch(() => {
@@ -162,17 +144,18 @@ function Popular() {
                 })
         }
 
+    }, [fetchedLanguages, selectedLanguage])
 
-    }
+    const isLoading = () => !repos[selectedLanguage] && error === null
 
     return (
         <React.Fragment>
             <LangaugesNav
                 selected={selectedLanguage}
-                onUpdateLanguage={updateLanguage}
+                onUpdateLanguage={setSelectedLanguage}
             />
 
-            {isLoading && <Loading text='Fetching Repos'/>}
+            {isLoading() && <Loading text='Fetching Repos'/>}
 
             {error && <p className='center-text error'>{error}</p>}
 
