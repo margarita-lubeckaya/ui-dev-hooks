@@ -1,10 +1,10 @@
-import React, {useContext} from 'react'
+import React, {CSSProperties, useContext} from 'react'
 import ThemeContext from '../contexts/theme'
 import {NavLink} from 'react-router-dom'
 
 const activeStyle = {
     color: 'rgb(187, 46, 31)'
-}
+} as CSSProperties
 
 export default function Nav() {
 

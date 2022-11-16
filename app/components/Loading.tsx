@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, CSSProperties} from 'react'
 import PropTypes from 'prop-types'
 
 const styles = {
@@ -9,10 +9,13 @@ const styles = {
         right: '0',
         marginTop: '20px',
         textAlign: 'center',
-    }
+    } as CSSProperties
 }
 
-function Loading({speed = 300, text = 'Loading'}) {
+function Loading({speed = 300, text = 'Loading'}: {
+    speed: number,
+    text: string
+}) {
 
     const [content, setContent] = useState(text)
 

@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, {ChangeEvent, FormEvent, useContext, useState} from 'react'
 import {FaUserFriends, FaFighterJet, FaTrophy, FaTimesCircle} from 'react-icons/fa'
 import PropTypes from 'prop-types'
 import ThemeContext from '../contexts/theme'
@@ -30,18 +30,21 @@ function Instructions() {
     )
 }
 
-function PlayerInput({onSubmit, label}) {
+function PlayerInput({onSubmit, label}: {
+    onSubmit: (event: string) => void,
+    label: string
+}) {
 
     const [username, setUsername] = useState('')
     const {theme} = useContext(ThemeContext)
 
-    const handleSubmit = (event) => {
+    const handleSubmit = (event: FormEvent) => {
         event.preventDefault()
 
         onSubmit(username)
     }
 
-    const handleChange = (event) => {
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setUsername(event.target.value)
     }
 
@@ -79,7 +82,11 @@ PlayerInput.propTypes = {
     label: PropTypes.string.isRequired
 }
 
-function PlayerPreview({username, onReset, label}) {
+function PlayerPreview({username, onReset, label}: {
+    username: string,
+    onReset: () => void,
+    label: string
+}) {
 
     const {theme} = useContext(ThemeContext)
 
@@ -115,18 +122,18 @@ PlayerPreview.propTypes = {
 }
 
 function Battle() {
-    const [playerOne, setPlayerOne] = useState(null)
-    const [playerTwo, setPlayerTwo] = useState(null)
+    const [playerOne, setPlayerOne] = useState<null | string>(null)
+    const [playerTwo, setPlayerTwo] = useState<null | string>(null)
 
-    const handleSubmit = (id, player) => {
-        if(id === 'playerOne') {
+    const handleSubmit = (id: string, player: string) => {
+        if (id === 'playerOne') {
             setPlayerOne(player)
         } else {
             setPlayerTwo(player)
         }
     }
-    const handleReset = (id) => {
-        if(id === 'playerOne') {
+    const handleReset = (id: string) => {
+        if (id === 'playerOne') {
             setPlayerOne(null)
         } else {
             setPlayerTwo(null)
