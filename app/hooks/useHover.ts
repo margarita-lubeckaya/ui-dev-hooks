@@ -1,6 +1,6 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 
-function useHover () {
+function useHover ():[boolean, {}] {
     const [isHover, setIsHover] = useState(false)
 
     const onMouseOver = () => setIsHover( true )

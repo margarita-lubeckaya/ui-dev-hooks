@@ -1,7 +1,6 @@
 import React, {useContext, useState} from 'react'
 import {FaUserFriends, FaFighterJet, FaTrophy, FaTimesCircle} from 'react-icons/fa'
 import PropTypes from 'prop-types'
-import Results from './Results'
 import ThemeContext from '../contexts/theme'
 import {Link} from 'react-router-dom'
 
