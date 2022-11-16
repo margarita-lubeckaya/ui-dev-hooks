@@ -13,7 +13,7 @@ const styles = {
 }
 
 function Loading({speed = 300, text = 'Loading'}: {
-    speed: number,
+    speed?: number,
     text: string
 }) {
 

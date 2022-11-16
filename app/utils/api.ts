@@ -63,7 +63,7 @@ export function battle(playersId: [string, string]) : Promise<[Player, Player]> 
     ]).then((results) => sortPlayers(results))
 }
 
-export function fetchPopularRepos(language: string) {
+export function fetchPopularRepos(language: string) : Promise<PlayerRepo[]> {
     const endpoint = window.encodeURI(`https://api.github.com/search/repositories?q=stars:>1+language:${language}&sort=stars&order=desc&type=Repositories`)
 
     return fetch(endpoint)

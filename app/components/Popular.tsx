@@ -1,24 +1,26 @@
-import React, {useReducer, useEffect, useRef, useState} from 'react'
+import React, {useReducer, useEffect, useRef, useState, CSSProperties} from 'react'
 import PropTypes from 'prop-types'
 import {fetchPopularRepos} from '../utils/api'
 import {FaUser, FaStar, FaCodeBranch, FaExclamationTriangle} from 'react-icons/fa'
 import Card from './Card'
 import Loading from './Loading'
 import Tooltip from './Tooltip'
+import {PlayerRepo} from "../types";
 
+type Language = 'All' | 'JavaScript' | 'Ruby' | 'Java' | 'CSS' | 'Python'
 
-function LangaugesNav({selected, onUpdateLanguage}) {
-    const languages = ['All', 'JavaScript', 'Ruby', 'Java', 'CSS', 'Python']
-
-    console.log('nav:', selected)
-
+function LangaugesNav({selected, onUpdateLanguage}: {
+    selected: Language,
+    onUpdateLanguage: (lang: Language) => void
+}) {
+    const languages: Language[] = ['All', 'JavaScript', 'Ruby', 'Java', 'CSS', 'Python']
     return (
         <ul className='flex-center'>
             {languages.map((language) => (
                 <li key={language}>
                     <button
                         className='btn-clear nav-link'
-                        style={language === selected ? {color: 'rgb(187, 46, 31)'} : null}
+                        style={language === selected ? {color: 'rgb(187, 46, 31)'} as CSSProperties : undefined}
                         onClick={() => onUpdateLanguage(language)}>
                         {language}
                     </button>
@@ -33,11 +35,11 @@ LangaugesNav.propTypes = {
     onUpdateLanguage: PropTypes.func.isRequired
 }
 
-function ReposGrid({repos}) {
+function ReposGrid({repos} : { repos: PlayerRepo[] }) {
     return (
         <ul className='grid space-around'>
             {repos.map((repo, index) => {
-                const {name, owner, html_url, stargazers_count, forks, open_issues} = repo
+                const {owner, html_url, stargazers_count, forks, open_issues} = repo
                 const {login, avatar_url} = owner
 
                 return (
@@ -83,7 +85,24 @@ ReposGrid.propTypes = {
 }
 
 
-function popularReducer(state, action) {
+type PartialRepo = Partial<Record<Language, PlayerRepo[]>>
+interface PopularReducerState {
+    repos: PartialRepo
+    error: string | null
+}
+
+interface PopularReducerErrorActions {
+    type: 'error'
+    error: string
+}
+interface PopularReducerUpdateReposActions {
+    type: 'updateRepos'
+    repos: PartialRepo
+}
+
+type PopularReducerAction = PopularReducerErrorActions | PopularReducerUpdateReposActions
+
+function popularReducer(state: PopularReducerState, action: PopularReducerAction) {
     switch (action.type) {
 
         case 'updateRepos' :
@@ -107,38 +126,30 @@ function popularReducer(state, action) {
         default:
             console.warn('Error default action: ')
     }
-
+    return  state
 }
 
 function Popular() {
 
-    const [selectedLanguage, setSelectedLanguage] = useState('All')
+    const [selectedLanguage, setSelectedLanguage] = useState<Language>('All')
 
-    const initState = {
-        repos: {},
-        error: null,
-    }
+    const [state, dispatch] = useReducer(popularReducer, {error: null, repos: {}});
 
-    const [{repos, error}, dispatch] = useReducer(popularReducer, initState);
-
-    const fetchedLanguages = useRef([])
+    const fetchedLanguages = useRef<String[]>([])
 
 
     useEffect(() => {
 
-        if(fetchedLanguages.current.includes([selectedLanguage]) === false){
+        if (!fetchedLanguages.current.includes(selectedLanguage)) {
 
             fetchedLanguages.current.push(selectedLanguage)
-
-            console.log(selectedLanguage)
-
 
             fetchPopularRepos(selectedLanguage)
                 .then((data) => {
                     dispatch({type: 'updateRepos', repos: {[selectedLanguage]: data}})
 
                 })
-                .catch(() => {
+                .catch((error) => {
                     console.warn('Error fetching repos: ', error)
                     dispatch({type: 'error', error: `There was an error fetching the repositories.`})
 
@@ -147,7 +158,7 @@ function Popular() {
 
     }, [fetchedLanguages, selectedLanguage])
 
-    const isLoading = () => !repos[selectedLanguage] && error === null
+    const isLoading = () => !state.repos[selectedLanguage] && state.error === null
 
     return (
         <React.Fragment>
@@ -158,9 +169,9 @@ function Popular() {
 
             {isLoading() && <Loading text='Fetching Repos'/>}
 
-            {error && <p className='center-text error'>{error}</p>}
+            {state.error && <p className='center-text error'>{state.error}</p>}
 
-            {repos[selectedLanguage] && <ReposGrid repos={repos[selectedLanguage]}/>}
+            {state.repos[selectedLanguage] && <ReposGrid repos={state.repos[selectedLanguage] || []}/>}
         </React.Fragment>
     )
 
