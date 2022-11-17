@@ -159,7 +159,7 @@ function Popular() {
     }, [fetchedLanguages, selectedLanguage])
 
     const isLoading = () => !state.repos[selectedLanguage] && state.error === null
-
+    const selectedRepos = state.repos[selectedLanguage]
     return (
         <React.Fragment>
             <LangaugesNav
@@ -171,7 +171,7 @@ function Popular() {
 
             {state.error && <p className='center-text error'>{state.error}</p>}
 
-            {state.repos[selectedLanguage] && <ReposGrid repos={state.repos[selectedLanguage] || []}/>}
+            {selectedRepos && <ReposGrid repos={selectedRepos}/>}
         </React.Fragment>
     )
 

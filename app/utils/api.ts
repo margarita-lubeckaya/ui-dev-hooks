@@ -36,7 +36,7 @@ function getRepos(username: string): Promise<PlayerRepo[]> {
         })
 }
 
-function getStarCount(repos: PlayerRepo[]) : number {
+function getStarCount(repos: PlayerRepo[]): number {
     return repos.reduce((count, {stargazers_count}) => count + stargazers_count, 0)
 }
 

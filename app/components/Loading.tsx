@@ -14,7 +14,7 @@ const styles = {
 
 function Loading({speed = 300, text = 'Loading'}: {
     speed?: number,
-    text: string
+    text?: string
 }) {
 
     const [content, setContent] = useState(text)

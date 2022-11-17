@@ -7,8 +7,9 @@ import Loading from './Loading'
 import Tooltip from './Tooltip'
 import queryString from 'query-string'
 import {Link} from 'react-router-dom'
+import {Player, PlayerProfile} from "../types";
 
-function ProfileList({profile}) {
+function ProfileList({profile} : {profile: PlayerProfile}) {
     return (
         <ul className='card-list'>
             <li>
@@ -47,7 +48,18 @@ ProfileList.propTypes = {
     profile: PropTypes.object.isRequired,
 }
 
-function resultsReducer(state, action) {
+interface ResultsReducerState {
+    error: string | null,
+    loading: boolean,
+    winner: Player | null,
+    loser: Player | null,
+}
+
+type ResultsReducerActions =
+    { type: 'battled', winner: Player, loser: Player } |
+    { type: 'error', error: string }
+
+function resultsReducer(state: ResultsReducerState, action: ResultsReducerActions) {
     switch (action.type) {
         case 'battled':
             return {
@@ -64,9 +76,10 @@ function resultsReducer(state, action) {
                 loading: false,
             }
     }
+    return state
 }
 
-function Results({location}) {
+function Results({location}: { location: URL }) {
     const [
         {winner, loser, error, loading},
         dispatch
@@ -79,7 +92,7 @@ function Results({location}) {
 
     useEffect(() => {
 
-        battle([playerOne, playerTwo])
+        battle([playerOne, playerTwo] as [string, string])
             .then((players) => {
                 dispatch({
                     type: 'battled',
@@ -99,7 +112,7 @@ function Results({location}) {
     }, [playerOne, playerTwo])
 
 
-    if (loading === true) {
+    if (loading === true || winner === null || loser == null) {
         return <Loading text='Battling'/>
     }
 
